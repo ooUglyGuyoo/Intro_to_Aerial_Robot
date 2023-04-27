@@ -1,0 +1,68 @@
+--- /djiros/imu
+header: 
+  seq: 71708
+  stamp: 
+    secs: 1509987829
+    nsecs: 386356656
+  frame_id: "FLU"
+orientation: 
+  x: -0.134212310719
+  y: 0.0109417611901
+  z: 0.727404749585
+  w: 0.672866723957
+orientation_covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+angular_velocity: 
+  x: -0.113365992904
+  y: 0.246387138963
+  z: 0.45954015851
+angular_velocity_covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+linear_acceleration: 
+  x: -0.610419531614
+  y: -3.27797826976
+  z: 9.50987492621
+linear_acceleration_covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+---
+
+--- /tag_detector/odom_yourwork
+header: 
+  seq: 37
+  stamp: 
+    secs: 1509987822
+    nsecs:  38856656
+  frame_id: "world"
+child_frame_id: ''
+pose: 
+  pose: 
+    position: 
+      x: -0.371295861838
+      y: -2.10601827502
+      z: 1.16449813257
+    orientation: 
+      x: -0.00204470759888
+      y: -0.0281980864503
+      z: -0.0572645533829
+      w: 0.997958645444
+  covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+twist: 
+  twist: 
+    linear: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    angular: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+  covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+---
+
+[ekf-2] process has died 
+[
+  pid 289858, exit code -6, 
+  cmd /home/workspace/devel/lib/ekf/ekf 
+  ~imu:=/djiros/imu 
+  ~tag_odom:=/tag_detector/odom_ref 
+  __name:=ekf 
+  __log:=/root/.ros/log/40b6c222-de6f-11ed-8407-5c80b611b2dc/ekf-2.log
+].
+log file: /root/.ros/log/40b6c222-de6f-11ed-8407-5c80b611b2dc/ekf-2*.log
