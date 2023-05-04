@@ -89,6 +89,7 @@ public:
   int fail_cnt;
 
   bool init_finish;
+  bool is_keyframe;
 
   Matrix3d ric[2];  // rotation from camera to body (IMU)
   Vector3d tic[2];  // translation from camera to body (IMU)

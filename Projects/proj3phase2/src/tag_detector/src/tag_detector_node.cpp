@@ -98,7 +98,7 @@ void process(const vector<int> &pts_id, const vector<cv::Point3f> &pts_3, const 
 
     int pts_number = un_pts_2.size();
 
-    ROS_INFO_STREAM("\npts_number = " << pts_number);
+    // ROS_INFO_STREAM("\npts_number = " << pts_number);
 
     Eigen::Matrix3d K_eigen; // K is the calibration parameter
     Eigen::Vector3d T_ref; // T_ref is the reference T (real T for my understanding)
@@ -138,7 +138,7 @@ void process(const vector<int> &pts_id, const vector<cv::Point3f> &pts_3, const 
         T=-T;
     }
 
-    ROS_INFO_STREAM("\nR = \n" << R << "\nT = \n" << T); // finish calculating T and R and cout
+    // ROS_INFO_STREAM("\nR = \n" << R << "\nT = \n" << T); // finish calculating T and R and cout
 
     Eigen::Matrix3d R_difference = R - R_ref; // calculate the differences between the calculated one and the ground truth
     float R_norm = R_difference.norm();
@@ -148,8 +148,8 @@ void process(const vector<int> &pts_id, const vector<cv::Point3f> &pts_3, const 
     float T_norm = T_difference.norm();
     float T_error = T_error + T_norm;
     
-    ROS_INFO_STREAM("\n R RMS Error = " << R_error/iteration);
-    ROS_INFO_STREAM("\n T RMS Error = " << T_error/iteration);
+    // ROS_INFO_STREAM("\n R RMS Error = " << R_error/iteration);
+    // ROS_INFO_STREAM("\n T RMS Error = " << T_error/iteration);
 
 
     //=================================================================================

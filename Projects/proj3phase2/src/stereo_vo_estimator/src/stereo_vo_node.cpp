@@ -93,7 +93,6 @@ void stereo_vo::pub_odometry() {
   rel_pose.relative_pose.orientation.x = rel_Q.x();
   rel_pose.relative_pose.orientation.y = rel_Q.y();
   rel_pose.relative_pose.orientation.z = rel_Q.z();
-
   rel_pose_pub_.publish(rel_pose);
 
   geometry_msgs::PoseStamped rel_pose_vis;

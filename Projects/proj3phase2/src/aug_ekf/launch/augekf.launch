@@ -4,7 +4,7 @@
     args="$(find stereo_vo)/config/realsense_2/realsense_n3_unsync.yaml">
     </node>
 
-    <node pkg="tag_detector" type="tag_detector" name="tag_detector" output="screen">
+    <node pkg="tag_detector" type="tag_detector" name="tag_detector" output="log">
         <remap from="~image_raw" to="/flattener/flatImage_0"/>
         <param name="cam_cal_file" type="string" value="$(find tag_detector)/config/pt_grey.yml"/>
         <param name="board_config_file" type="string" value="$(find tag_detector)/config/a.yml"/>
@@ -23,6 +23,12 @@
         <param name="aug_ekf/vo_pos" type="double" value="0.1"/>
         <param name="aug_ekf/vo_rot" type="double" value="0.1"/>
     </node>
+
+    <node type="rviz" name="rviz" pkg="rviz"/>
+
+    <node type="rqt_plot" name="rqt_plot_p" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/pose/pose/position"/>
+    <node type="rqt_plot" name="rqt_plot_o" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/pose/pose/orientation"/>
+    <node type="rqt_plot" name="rqt_plot_t" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/twist/twist/linear"/>
 
     <node name="rosbag" pkg="rosbag" type="play" respawn="false" args="--start=0 --queue=1000 $(find aug_ekf)/bag/bag_aug_ekf.bag" />
 </launch>

@@ -27,6 +27,7 @@ Estimator::Estimator() {
   prev_frame.w_R_c = Eigen::Matrix3d::Identity();
   fail_cnt = 0;
   init_finish = false;
+  is_keyframe = false;
 }
 
 void Estimator::reset() {
@@ -87,7 +88,7 @@ bool Estimator::inputImage(ros::Time time_stamp, const cv::Mat& _img, const cv::
   // cv::waitKey(1);
 
   vector<cv::Point2f> left_pts_2d, right_pts_2d;
-   vector<cv::Point2f> undistort_left_pts_2d, undistort_right_pts_2d;
+  vector<cv::Point2f> undistort_left_pts_2d, undistort_right_pts_2d;
   vector<cv::Point3f> key_pts_3d; 
   vector<cv::Point2f> cur_pts_3d; 
   vector<cv::Point2f> cur_pts_2d; // trackFeatureBetweenFrames returns the 2d points of the current frame
@@ -120,27 +121,24 @@ bool Estimator::inputImage(ros::Time time_stamp, const cv::Mat& _img, const cv::
 
   // cout << "xyz: " << key_frame.xyz << endl;
 
+  rel_key_time = key_frame.frame_time; // This line publish the key frame time inorder for the aug_ekf to know which is the key frame
   // Change key frame
-  if(c_t_k.norm() > TRANSLATION_THRESHOLD || acos(Quaterniond(c_R_k).w()) * 2.0 > ROTATION_THRESHOLD || key_pts_3d.size() < FEATURE_THRESHOLD || !init_finish){
-    if (c_t_k.norm() > 0.1)
+  if (c_t_k.norm() > TRANSLATION_THRESHOLD || acos(Quaterniond(c_R_k).w()) * 2.0 > ROTATION_THRESHOLD || key_pts_3d.size() < FEATURE_THRESHOLD || !init_finish)
+  {
+    if (c_t_k.norm() > 2)
     {
-      ROS_ERROR("Translation too large");
+      c_t_k.setZero();
+      c_R_k.setIdentity();
     }
-    if (acos(Quaterniond(c_R_k).w()) * 2.0 > 0.1)
-    {
-      ROS_ERROR("Rotation too large");
-    }
-    if (key_pts_3d.size() < FEATURE_THRESHOLD)
-    {
-      ROS_ERROR("Feature too few");
-    }
-
     key_frame = cur_frame;
-    ROS_WARN("Change key frame to current frame.");
-    cout << "c_t_k.norm(): " << c_t_k.norm() << endl;
-    cout << "cal c_R_k: " << acos(Quaterniond(c_R_k).w()) * 2.0 << endl;
-    cout << "key_pts_3d: "<< key_pts_3d.size() << endl;
+    is_keyframe = true;
+    ROS_INFO("Change key frame to current frame.");
   }
+  else
+  {
+    is_keyframe = false;
+  }
+
   prev_frame = cur_frame;
   
   updateLatestStates(cur_frame); // the states of the current frame is required to be updated in the updateLatest-States function
@@ -155,17 +153,17 @@ void Estimator::extractNewFeatures(const cv::Mat& img, vector<cv::Point2f>& uv) 
   // FIXME: extract the new 2d features of img and store them in uv. You may simply use the goodFeaturesToTrack function in OpenCV.
 
   // cv:goodFeaturesToTrack parameters
-  int MaxCorners = 400;
-  double QualityLevel = 0.03;
-  double MinDistance = 12.0;
-  int BlockSize = 15;
-  bool UseHarrisDetector = false;
-  double k = 0.04;
+  // int MaxCorners = 400;
+  // double QualityLevel = 0.03;
+  // double MinDistance = 12.0;
+  // int BlockSize = 15;
+  // bool UseHarrisDetector = false;
+  // double k = 0.04;
   // double Mask = ; double GradientSize = ;
 
-  cv::goodFeaturesToTrack(img,uv,MaxCorners,QualityLevel,MinDistance,cv::Mat(),BlockSize,UseHarrisDetector,k);
+  cv::goodFeaturesToTrack(img, uv, MAX_CNT, 0.01, MIN_DIST);
 
-  drawImage(img,uv,"new_features");
+  // drawImage(img,uv,"new_features");
 
 }
 
@@ -207,12 +205,31 @@ bool Estimator::trackFeatureBetweenFrames(  const Estimator::frame& keyframe, co
   reduceVector(key_pts_2d, status);
   reduceVector(key_pts_3d, status);
   reduceVector(cur_pts_2d, status);
-  vector<cv::Point2f> undistort_key_pts_2d, undistort_cur_pts_2d;
-  undistort_key_pts_2d = Estimator::undistortedPts(key_pts_2d, m_camera[0]);
-  undistort_cur_pts_2d = Estimator::undistortedPts(cur_pts_2d, m_camera[0]);
-  vector<uchar> ransacMask = rejectWithF(undistort_key_pts_2d, undistort_cur_pts_2d);
-  reduceVector(key_pts_3d, ransacMask);
-  reduceVector(cur_pts_2d, ransacMask);
+
+  vector<cv::Point2f> flowback_pts_2d;
+  cv::calcOpticalFlowPyrLK(cur_img, keyframe.img, cur_pts_2d, flowback_pts_2d, status, err);
+
+  for (auto i = 0ul; i < flowback_pts_2d.size(); i++)
+  {
+    float dx = flowback_pts_2d[i].x - key_pts_2d[i].x;
+    float dy = flowback_pts_2d[i].y - key_pts_2d[i].y;
+    if (dx * dx + dy * dy > 1)
+    {
+      status[i] = 0;
+    }
+  }
+  reduceVector<cv::Point2f>(cur_pts_2d, status);
+  reduceVector<cv::Point2f>(key_pts_2d, status);
+  reduceVector<cv::Point3f>(key_pts_3d, status);
+
+  if (cur_pts_2d.size() > 8)
+  {
+    vector<uchar> mask;
+    cv::findFundamentalMat(key_pts_2d, cur_pts_2d, mask, cv::FM_RANSAC, 1, 0.995);
+    reduceVector<cv::Point2f>(cur_pts_2d, mask);
+    reduceVector<cv::Point2f>(key_pts_2d, mask);
+    reduceVector<cv::Point3f>(key_pts_3d, mask);
+  }
 
   // drawImage(cur_img, cur_pts_2d, "LK-trackFeatureBetweenFrames");
 
@@ -263,8 +280,8 @@ void Estimator::updateLatestStates(frame &latest_frame) {
   latest_pointcloud = latest_frame.xyz;
   latest_P = latest_frame.w_R_c *(-ric[0].transpose()*tic[0]) + latest_frame.w_t_c;
   latest_Q = Eigen::Quaterniond(latest_frame.w_R_c * ric[0].transpose()).normalized();
-  // latest_rel_P = latest_frame.w_t_c - key_frame.w_t_c;
-  // latest_rel_Q = Eigen::Quaterniond(latest_frame.w_R_c * ric[0].transpose() * key_frame.w_R_c.transpose()).normalized();
+  latest_rel_P = latest_frame.w_t_c - key_frame.w_t_c;
+  latest_rel_Q = Eigen::Quaterniond(latest_frame.w_R_c * ric[0].transpose() * key_frame.w_R_c.transpose()).normalized();
 }
 
 void Estimator::generate3dPoints(const vector<cv::Point2f>& left_pts,

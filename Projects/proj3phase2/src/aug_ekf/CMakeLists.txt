@@ -31,5 +31,7 @@ add_executable(${PROJECT_NAME}
     src/ekf_filter.cpp
     src/ekf_model.cpp
     )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
-
+target_link_libraries(${PROJECT_NAME} 
+                    ${catkin_LIBRARIES}
+                    -ldw
+                    )
