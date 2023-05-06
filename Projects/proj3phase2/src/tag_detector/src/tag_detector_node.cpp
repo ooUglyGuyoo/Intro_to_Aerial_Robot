@@ -70,102 +70,119 @@ void process(const vector<int> &pts_id, const vector<cv::Point3f> &pts_3, const 
         {
             R_ref(i,j) = r.at<double>(i, j);
         }
+
+    Eigen::Affine3d T_ic, T_ct, T_wi, T_wt;
+    T_ic.translation() = Vector3d(0.07, -0.02, 0.01);
+    T_ic.linear() = Quaterniond(0, 1, 0, 0).toRotationMatrix();
+
+    T_ct.translation() = Vector3d(t.at<double>(0, 0),
+                                  t.at<double>(1, 0),
+                                  t.at<double>(2, 0));
+    T_ct.linear() = R_ref;
+
+    T_wt.linear() << 0.0, 1.0, 0.0,
+        1.0, 0.0, 0.0,
+        0.0, 0.0, -1.0;
+    T_wi = T_wt * T_ct.inverse() * T_ic.inverse();
+
+    Vector3d t_wi = T_wi.translation();
     Quaterniond Q_ref;
-    Q_ref = R_ref;
+    Q_ref = T_wi.linear();
     nav_msgs::Odometry odom_ref;
     odom_ref.header.stamp = frame_time;
     odom_ref.header.frame_id = "world";
-    odom_ref.pose.pose.position.x = t.at<double>(0, 0);
-    odom_ref.pose.pose.position.y = t.at<double>(1, 0);
-    odom_ref.pose.pose.position.z = t.at<double>(2, 0);
+    odom_ref.pose.pose.position.x = t_wi(0);
+    odom_ref.pose.pose.position.y = t_wi(1);
+    odom_ref.pose.pose.position.z = t_wi(2);
     odom_ref.pose.pose.orientation.w = Q_ref.w();
     odom_ref.pose.pose.orientation.x = Q_ref.x();
     odom_ref.pose.pose.orientation.y = Q_ref.y();
     odom_ref.pose.pose.orientation.z = Q_ref.z();
     pub_odom_ref.publish(odom_ref);
 
-    // version 2, your work
-    Matrix3d R;
-    Vector3d T;
-    R.setIdentity();
-    T.setZero();
-    vector<cv::Point2f> un_pts_2; // The ideal point coordinate in the next step. Output ideal point coordinates (1xN/Nx1 2-channel or vector<Point2f> ) after undistortion and reverse perspective transformation. 
-    cv::undistortPoints(pts_2, un_pts_2, K, D, noArray(), K); // Computes the ideal point coordinates from the observed point coordinates.
+    // // version 2, your work
+    // Matrix3d R;
+    // Vector3d T;
+    // R.setIdentity();
+    // T.setZero();
+    // vector<cv::Point2f> un_pts_2; // The ideal point coordinate in the next step. Output ideal point coordinates (1xN/Nx1 2-channel or vector<Point2f> ) after undistortion and reverse perspective transformation. 
+    // cv::undistortPoints(pts_2, un_pts_2, K, D, noArray(), K); // Computes the ideal point coordinates from the observed point coordinates.
 
-    //================================================================================
+    // //================================================================================
     
-    iteration = iteration + 1;
+    // iteration = iteration + 1;
 
-    int pts_number = un_pts_2.size();
+    // int pts_number = un_pts_2.size();
 
-    // ROS_INFO_STREAM("\npts_number = " << pts_number);
+    // // ROS_INFO_STREAM("\npts_number = " << pts_number);
 
-    Eigen::Matrix3d K_eigen; // K is the calibration parameter
-    Eigen::Vector3d T_ref; // T_ref is the reference T (real T for my understanding)
-    Eigen::MatrixXd A(2*pts_number,9);
-    cv::cv2eigen(K, K_eigen); // change a cv element to eigen element
-    cv::cv2eigen(t, T_ref);
+    // Eigen::Matrix3d K_eigen; // K is the calibration parameter
+    // Eigen::Vector3d T_ref; // T_ref is the reference T (real T for my understanding)
+    // Eigen::MatrixXd A(2*pts_number,9);
+    // cv::cv2eigen(K, K_eigen); // change a cv element to eigen element
+    // cv::cv2eigen(t, T_ref);
 
-    for (int i = 0; i < pts_number; i++){
-        A.block(2*i,0,2,9) << pts_3[i].x, pts_3[i].y, 1, 0, 0, 0, - pts_3[i].x * un_pts_2[i].x, -pts_3[i].y*un_pts_2[i].x, - un_pts_2[i].x,
-                              0, 0, 0, pts_3[i].x, pts_3[i].y, 1, - pts_3[i].x * un_pts_2[i].y, -pts_3[i].y*un_pts_2[i].y, - un_pts_2[i].y;
-    } // stack pairs of observations
+    // for (int i = 0; i < pts_number; i++){
+    //     A.block(2*i,0,2,9) << pts_3[i].x, pts_3[i].y, 1, 0, 0, 0, - pts_3[i].x * un_pts_2[i].x, -pts_3[i].y*un_pts_2[i].x, - un_pts_2[i].x,
+    //                           0, 0, 0, pts_3[i].x, pts_3[i].y, 1, - pts_3[i].x * un_pts_2[i].y, -pts_3[i].y*un_pts_2[i].y, - un_pts_2[i].y;
+    // } // stack pairs of observations
     
-    JacobiSVD<MatrixXd> svd_Ax(A, ComputeThinU | ComputeThinV); // Two-sided Jacobi SVD decomposition of a rectangular matrix. Its left singular vectors are the columns of the thin U matrix. Its right singular vectors are the columns of the thin V matrix
+    // JacobiSVD<MatrixXd> svd_Ax(A, ComputeThinU | ComputeThinV); // Two-sided Jacobi SVD decomposition of a rectangular matrix. Its left singular vectors are the columns of the thin U matrix. Its right singular vectors are the columns of the thin V matrix
 
-    Eigen::MatrixXd V = svd_Ax.matrixV(); // matrix V in the SVD problem
-    Eigen::MatrixXd x = V.rightCols<1>(); // get the most right col of V which contains the H parameter
-    Eigen::Matrix3d H_head = MatrixXd::Zero(3,3);
+    // Eigen::MatrixXd V = svd_Ax.matrixV(); // matrix V in the SVD problem
+    // Eigen::MatrixXd x = V.rightCols<1>(); // get the most right col of V which contains the H parameter
+    // Eigen::Matrix3d H_head = MatrixXd::Zero(3,3);
 
-    H_head << x(0), x(1), x(2), x(3), x(4), x(5), x(6), x(7), x(8);
+    // H_head << x(0), x(1), x(2), x(3), x(4), x(5), x(6), x(7), x(8);
     
-    if (H_head(2,2) < 0){
-        H_head = -H_head;
-    }
+    // if (H_head(2,2) < 0){
+    //     H_head = -H_head;
+    // }
 
-    Eigen::Matrix3d h1h2t = K_eigen.inverse()*H_head;
-    Vector3d h1 = h1h2t.col(0);
-    Vector3d h2 = h1h2t.col(1);
+    // Eigen::Matrix3d h1h2t = K_eigen.inverse()*H_head;
+    // Vector3d h1 = h1h2t.col(0);
+    // Vector3d h2 = h1h2t.col(1);
 
-    Eigen::Matrix3d r1r2r3;
-    r1r2r3 << h1, h2, h1.cross(h2);
+    // Eigen::Matrix3d r1r2r3;
+    // r1r2r3 << h1, h2, h1.cross(h2);
 
-    JacobiSVD<MatrixXd> svd_USV(r1r2r3, ComputeThinU | ComputeThinV);
-    R = svd_USV.matrixU()*svd_USV.matrixV().transpose();
-    T = h1h2t.col(2)/h1h2t.col(0).norm();
+    // JacobiSVD<MatrixXd> svd_USV(r1r2r3, ComputeThinU | ComputeThinV);
+    // R = svd_USV.matrixU()*svd_USV.matrixV().transpose();
+    // T = h1h2t.col(2)/h1h2t.col(0).norm();
 
-    if (T(2) < 0){
-        T=-T;
-    }
+    // if (T(2) < 0){
+    //     T=-T;
+    // }
 
-    // ROS_INFO_STREAM("\nR = \n" << R << "\nT = \n" << T); // finish calculating T and R and cout
+    // // ROS_INFO_STREAM("\nR = \n" << R << "\nT = \n" << T); // finish calculating T and R and cout
 
-    Eigen::Matrix3d R_difference = R - R_ref; // calculate the differences between the calculated one and the ground truth
-    float R_norm = R_difference.norm();
-    float R_error = R_error + R_norm;
+    // Eigen::Matrix3d R_difference = R - R_ref; // calculate the differences between the calculated one and the ground truth
+    // float R_norm = R_difference.norm();
+    // float R_error = R_error + R_norm;
     
-    Eigen::Vector3d T_difference = T - T_ref;
-    float T_norm = T_difference.norm();
-    float T_error = T_error + T_norm;
+    // Eigen::Vector3d T_difference = T - T_ref;
+    // float T_norm = T_difference.norm();
+    // float T_error = T_error + T_norm;
     
-    // ROS_INFO_STREAM("\n R RMS Error = " << R_error/iteration);
-    // ROS_INFO_STREAM("\n T RMS Error = " << T_error/iteration);
+    // // ROS_INFO_STREAM("\n R RMS Error = " << R_error/iteration);
+    // // ROS_INFO_STREAM("\n T RMS Error = " << T_error/iteration);
 
 
-    //=================================================================================
-    Quaterniond Q_yourwork;
-    Q_yourwork = R;
-    nav_msgs::Odometry odom_yourwork;
-    odom_yourwork.header.stamp = frame_time;
-    odom_yourwork.header.frame_id = "world";
-    odom_yourwork.pose.pose.position.x = T(0);
-    odom_yourwork.pose.pose.position.y = T(1);
-    odom_yourwork.pose.pose.position.z = T(2);
-    odom_yourwork.pose.pose.orientation.w = Q_yourwork.w();
-    odom_yourwork.pose.pose.orientation.x = Q_yourwork.x();
-    odom_yourwork.pose.pose.orientation.y = Q_yourwork.y();
-    odom_yourwork.pose.pose.orientation.z = Q_yourwork.z();
-    pub_odom_yourwork.publish(odom_yourwork);
+    // //=================================================================================
+    // Quaterniond Q_yourwork;
+    // Q_yourwork = R;
+    // nav_msgs::Odometry odom_yourwork;
+    // odom_yourwork.header.stamp = frame_time;
+    // odom_yourwork.header.frame_id = "world";
+    // odom_yourwork.pose.pose.position.x = T(0);
+    // odom_yourwork.pose.pose.position.y = T(1);
+    // odom_yourwork.pose.pose.position.z = T(2);
+    // odom_yourwork.pose.pose.orientation.w = Q_yourwork.w();
+    // odom_yourwork.pose.pose.orientation.x = Q_yourwork.x();
+    // odom_yourwork.pose.pose.orientation.y = Q_yourwork.y();
+    // odom_yourwork.pose.pose.orientation.z = Q_yourwork.z();
+    // pub_odom_yourwork.publish(odom_yourwork);
+    
 }
 
 cv::Point3f getPositionFromIndex(int idx, int nth)
@@ -222,7 +239,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n("~");
 
     ros::Subscriber sub_img = n.subscribe("image_raw", 100, img_callback);
-    pub_odom_yourwork = n.advertise<nav_msgs::Odometry>("odom_yourwork",10);
+    // pub_odom_yourwork = n.advertise<nav_msgs::Odometry>("odom_yourwork",10);
     pub_odom_ref = n.advertise<nav_msgs::Odometry>("odom_ref",10);
     //init aruco detector
     string cam_cal, board_config;

@@ -3,7 +3,7 @@ LIANG, Yuchen Eric (20582717)
 
 ## Figures plotted by rqt plot and rviz
 <p align="center">
-<img src="./assets/P3p2-rviz.png" alt= “” width="600">
+<img src="./assets/P3p2-rviz.png" alt= “” width="500">
 </p>
 
 <p align="center">
@@ -28,7 +28,7 @@ The structure of the code is shown in the flowcharts. The model is implementated
 
 ## others
 ### Environment issues
-- Ceres solver 1.14.0 is installed in the docker image. The installation followed https://zhuanlan.zhihu.com/p/151675712
+- Ceres solver 1.14.0 is installed in the docker image. The installation followed [this link](https://zhuanlan.zhihu.com/p/151675712)
 - Files copied from previous assignment (tag_detector and stereo_vo_estimator)
 - aruco-1.2.4 is also added to the src folder
 - libdw is installed
@@ -40,4 +40,5 @@ Found a lot of bugs in stereVO, list some that I can remember when writing this 
 - Not using parameters in stereoVO parameters.yaml
 - `Estimator::updateLatestStates` not updating `latest_rel_P` and `latest_rel_Q`
 - stereoVO node not publishing rel_pose, therefore ekf_filter can not get the data. Add `rel_pose_pub_.publish(rel_pose);`
+- there are also bugs in tag_detector, the odom_ref is published directly with out any calculation.
 - Too many can't remember ......

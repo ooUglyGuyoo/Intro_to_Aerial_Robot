@@ -280,8 +280,18 @@ void Estimator::updateLatestStates(frame &latest_frame) {
   latest_pointcloud = latest_frame.xyz;
   latest_P = latest_frame.w_R_c *(-ric[0].transpose()*tic[0]) + latest_frame.w_t_c;
   latest_Q = Eigen::Quaterniond(latest_frame.w_R_c * ric[0].transpose()).normalized();
-  latest_rel_P = latest_frame.w_t_c - key_frame.w_t_c;
-  latest_rel_Q = Eigen::Quaterniond(latest_frame.w_R_c * ric[0].transpose() * key_frame.w_R_c.transpose()).normalized();
+  
+  Affine3d i_T_c, bc_T_kc, ki_T_bi;
+  i_T_c.linear() = RIC[0];
+  i_T_c.translation() = TIC[0];
+
+  bc_T_kc.linear() = c_R_k;
+  bc_T_kc.translation() = c_t_k;
+
+  ki_T_bi = i_T_c * bc_T_kc.inverse() * i_T_c.inverse();
+
+  latest_rel_P = ki_T_bi.translation();
+  latest_rel_Q = ki_T_bi.linear();
 }
 
 void Estimator::generate3dPoints(const vector<cv::Point2f>& left_pts,
