@@ -16,6 +16,16 @@ LIANG, Yuchen Eric (20582717)
 </p>
 The structure of the code is shown in the flowcharts. The model is implementated based on the lecture notes. Some code is generate by Autograd from matlab. The calculation did not work, so don't bother looking at it.
 
+## Implementation
+- setup docker environment [this method](https://github.com/HKUST-Aerial-Robotics/HKUST-ELEC5660-Introduction-to-Aerial-Robotics/issues/1) or use your own docker envionrment and install ubuntu 16.04 and ros kinetic. Remember to link the container to the source file.
+- source ros setup.bash file for each terminal or write it inside .bashrc `source /opt/ros/kinetic/setup.bash`
+- check whether eigen and ceres is installed, if not, install and make it follow [this link](https://zhuanlan.zhihu.com/p/151675712). (The dependencies can be found [here](https://gist.github.com/JihongJu/97af193dd9334497b1916862caf0c467))
+- make arUco follow the README in aruco-1.2.4 
+- If libdw not installed `sudo apt install libdw-dev`
+- `cd /home/workspace` and `catkin_make`
+- `source devel/setup.bash`
+- `roslaunch aug_ekf augekf.launch`
+
 ## others
 ### Environment issues
 - Ceres solver 1.14.0 is installed in the docker image. The installation followed https://zhuanlan.zhihu.com/p/151675712
