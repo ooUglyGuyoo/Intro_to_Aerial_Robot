@@ -1,44 +1,32 @@
 # ELEC5660 Project 3 Phase 3 Report
 LIANG, Yuchen Eric (20582717)
 
+## Video demonstration
+
+Video can be found using [this link](https://hkustconnect-my.sharepoint.com/:v:/g/personal/yliangbk_connect_ust_hk/ES41RdWWiD1BrLjjaX8qIqMBo2O5OA5zVYy_ylGkNCdoaA?e=7Uh2Lu).
+
 ## Figures plotted by rqt plot and rviz
-<p align="center">
-<img src="./assets/P3p2-rviz.png" alt= “” width="500">
-</p>
+We use A mode to fly the plane and record a bag and tuned it on our own computer. Below is the output of running our bag. Bags can be found using [this link](https://hkustconnect-my.sharepoint.com/:f:/g/personal/yliangbk_connect_ust_hk/EtrhAOyz79tHjMCFhGcVOSQBaDIjO6kzQLXoFScIGchzCQ?e=PYoyM6).
+
 
 <p align="center">
-<img src="./assets/P3p2-rqtplot.png" alt= “” width="600">
+<img src="./assets/P3p3-rqtplot.png" alt= “” width="550">
+</p>
+<p align="center">
+<img src="./assets/P3p3-rviz.png" alt= “” width="700">
 </p>
 
 ## Descriptions about your implementation
-<p align="center">
-<img src="./assets/ELEC5660-p3p2-flowchart.png" alt= “” width="600">
-</p>
-The structure of the code is shown in the flowcharts. The model is implementated based on the lecture notes. Some code is generate by Autograd from matlab. The calculation did not work, so don't bother looking at it.
+#### Trajectory generation
+The trajectory is generated using matlab A-star code in project 1 phase 4, we fine tune the path and the obstacle position a little (did not strictly followed the guide line). We give more spaces between the wall and camera to avoid crash of aug-EKF. The parameter is put inside the P.txt and t.txt and is read buy the traj_generator python file. The trajectory is hardcode into the plane, it is not doing realtime planning.
 
-## Implementation
-- setup docker environment [this method](https://github.com/HKUST-Aerial-Robotics/HKUST-ELEC5660-Introduction-to-Aerial-Robotics/issues/1) or use your own docker envionrment and install ubuntu 16.04 and ros kinetic. Remember to link the container to the source file.
-- source ros setup.bash file for each terminal or write it inside .bashrc `source /opt/ros/kinetic/setup.bash`
-- check whether eigen and ceres is installed, if not, install and make it follow [this link](https://zhuanlan.zhihu.com/p/151675712). (The dependencies can be found [here](https://gist.github.com/JihongJu/97af193dd9334497b1916862caf0c467))
-- make arUco follow the README in aruco-1.2.4 
-- If libdw not installed `sudo apt install libdw-dev`
-- `cd /home/workspace` and `catkin_make`
-- `source devel/setup.bash`
-- `roslaunch aug_ekf augekf.launch`
+#### Augmented EKF and stereo VO
+We did not use tag as a reference, therefore we remove PNP related code from the algorithm. But bugs are found in predictIMU function. It seems that in previous project phase, the aug_ekf is not crashed because the tag detector drag the odometry bag though the imu data is not processed properly. The aug_ekf is still not robust enough, but it works for one time, while we also need to . 
 
 ## others
-### Environment issues
-- Ceres solver 1.14.0 is installed in the docker image. The installation followed [this link](https://zhuanlan.zhihu.com/p/151675712)
-- Files copied from previous assignment (tag_detector and stereo_vo_estimator)
-- aruco-1.2.4 is also added to the src folder
-- libdw is installed
-- Type `auto` is used in the scripts, please use C++11 or higher version to compile the code
+#### Bugs
+There are a lot of bugs during our implementation, here we will select some significant ones to talk about.
+- Aug_ekf is not robust enough, the algorithm will crash for example: when you start your plane on the ground (significant numbers of feature point lost on the ground), or when the camera is too close to a surface (like the wall). We did not solve it, we just test it for many times and it works for one time.
+- Mechanical bugs and hardware bugs should be aware of through out the whole time. Occasions like the motor mounting screw is loosen due to vibration and port is not properlly pluged can be very annoying and causing you time to trying to find bugs on your code. 
 
-### Bugs  
-Found a lot of bugs in stereVO, list some that I can remember when writing this document:
-- Bugs in stereoVO `Estimator::trackFeatureBetweenFrames`
-- Not using parameters in stereoVO parameters.yaml
-- `Estimator::updateLatestStates` not updating `latest_rel_P` and `latest_rel_Q`
-- stereoVO node not publishing rel_pose, therefore ekf_filter can not get the data. Add `rel_pose_pub_.publish(rel_pose);`
-- there are also bugs in tag_detector, the odom_ref is published directly with out any calculation.
-- Too many can't remember ......
+

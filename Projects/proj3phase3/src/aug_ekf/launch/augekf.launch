@@ -26,9 +26,9 @@
 
     <node type="rviz" name="rviz" pkg="rviz"/>
 
-    <!-- <node type="rqt_plot" name="rqt_plot_p" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/pose/pose/position"/>
+    <node type="rqt_plot" name="rqt_plot_p" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/pose/pose/position"/>
     <node type="rqt_plot" name="rqt_plot_o" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/pose/pose/orientation"/>
-    <node type="rqt_plot" name="rqt_plot_t" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/twist/twist/linear"/> -->
+    <node type="rqt_plot" name="rqt_plot_t" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/twist/twist/linear"/>
 
     <node name="rosbag" pkg="rosbag" type="play" respawn="false" args="--start=0 --queue=1000 $(find aug_ekf)/bag/hover.bag -r 3"/>
 </launch>

@@ -1,0 +1,34 @@
+<launch>
+
+    <node pkg="stereo_vo" type="stereo_vo" name="vo" output="log" 
+    args="$(find stereo_vo)/config/realsense_2/realsense_n3_unsync.yaml">
+    </node>
+
+    <node pkg="tag_detector" type="tag_detector" name="tag_detector" output="log">
+        <remap from="~image_raw" to="/camera/infra1/image_rect_raw"/>
+        <param name="cam_cal_file" type="string" value="$(find tag_detector)/config/pt_grey.yml"/>
+        <param name="board_config_file" type="string" value="$(find tag_detector)/config/a.yml"/>
+    </node>
+
+    <node pkg="aug_ekf" type="aug_ekf" name="aug_ekf" output="screen">
+        <remap from="~imu" to="/djiros/imu"/>
+        <remap from="~tag_odom" to="/tag_detector/odom_ref"/>
+        <!-- <remap from="~ekf_fused_odom" to="/pos_vel_mocap/odom_TA"/> -->
+
+        <param name="aug_ekf/ng" type="double"  value="1.0"/>
+        <param name="aug_ekf/na" type="double"  value="1.0"/>
+        <param name="aug_ekf/nbg" type="double" value="0.1"/>
+        <param name="aug_ekf/nba" type="double" value="0.1"/>
+        <param name="aug_ekf/pnp_p" type="double" value="0.5"/>
+        <param name="aug_ekf/pnp_q" type="double" value="0.5"/>
+        <param name="aug_ekf/vo_pos" type="double" value="0.1"/>
+        <param name="aug_ekf/vo_rot" type="double" value="0.1"/>
+    </node>
+
+    <node type="rviz" name="rviz" pkg="rviz"/>
+
+    <!-- <node type="rqt_plot" name="rqt_plot_p" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/pose/pose/position"/>
+    <node type="rqt_plot" name="rqt_plot_o" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/pose/pose/orientation"/>
+    <node type="rqt_plot" name="rqt_plot_t" pkg="rqt_plot" args="/aug_ekf/ekf_fused_odom/twist/twist/linear"/> -->
+
+</launch>

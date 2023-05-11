@@ -1,0 +1,20 @@
+<launch>
+	<arg name="uavname" default="px3" />
+        <arg name="odom_topic" value="/aug_ekf/ekf_fused_odom" />
+
+	<node pkg="n1ctrl" type="n1ctrl_node" name="n1ctrl" output="screen">
+		<remap from="~joy" to="/djiros/rc" />
+        <remap from="~odom" to="$(arg odom_topic)" />
+		<remap from="~imu" to="/djiros/imu" />
+		<remap from="~cmd" to="/position_cmd" />
+
+		<remap from="~desire_pose" to="/desire_pose" />
+		<remap from="~traj_start_trigger" to="/traj_start_trigger" />
+		<remap from="~ctrl" to="/djiros/ctrl" />
+
+                <rosparam command="load" file="$(find machine_defined)/config/ctrl_param_$(arg uavname).yaml" />
+        <param name="work_mode" value="real-time" />
+        <param name="js_ctrl_mode" value="feedback" />
+	</node>
+ 
+</launch>

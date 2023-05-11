@@ -1,0 +1,37 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/lwangax/ctrl_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/lwangax/ctrl_ws/src/bag_filter/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/fast_planner/bspline/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/fast_planner/bspline_opt/include/**",
+        "/home/lwangax/ctrl_ws/src/calib_image_saver/include/**",
+        "/home/lwangax/ctrl_ws/src/code_utils/include/**",
+        "/home/lwangax/ctrl_ws/src/dr_planner/include/**",
+        "/home/lwangax/ctrl_ws/src/map_server/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/uav_simulator/Utils/multi_map_server/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/fast_planner/path_searching/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/fast_planner/plan_env/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/fast_planner/plan_manage/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/fast_planner/poly_traj/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/uav_simulator/Utils/pose_utils/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/uav_simulator/Utils/quadrotor_msgs/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/uav_simulator/so3_control/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/uav_simulator/so3_disturbance_generator/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/uav_simulator/so3_quadrotor_simulator/include/**",
+        "/home/lwangax/ctrl_ws/src/traj_generator/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/fast_planner/traj_utils/include/**",
+        "/home/lwangax/ctrl_ws/src/Fast-Planner/uav_simulator/Utils/uav_utils/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}
