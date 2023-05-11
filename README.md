@@ -1,5 +1,9 @@
 # HKUST ELEC5660 - Introduction to Aerial Robotics
 
+<p align="center">
+<img src="./Projects/proj3phase3/assets/HKUST_ELEC5660_2023_GP6.gif">
+</p>
+
 <div id="course_home_content">
 
 <div id="course_syllabus" style="margin-bottom: 10px;" class="user_content enhanced">

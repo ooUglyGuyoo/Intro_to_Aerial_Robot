@@ -4,17 +4,21 @@ LIANG, Yuchen Eric (20582717)
 ## Video demonstration
 
 Video can be found using [this link](https://hkustconnect-my.sharepoint.com/:v:/g/personal/yliangbk_connect_ust_hk/ES41RdWWiD1BrLjjaX8qIqMBo2O5OA5zVYy_ylGkNCdoaA?e=7Uh2Lu).
+<p align="center">
+<img src="./assets;/../assets/HKUST_ELEC5660_2023_GP6.gif">
+</p>
 
 ## Figures plotted by rqt plot and rviz
 We use A mode to fly the plane and record a bag and tuned it on our own computer. Below is the output of running our bag. Bags can be found using [this link](https://hkustconnect-my.sharepoint.com/:f:/g/personal/yliangbk_connect_ust_hk/EtrhAOyz79tHjMCFhGcVOSQBaDIjO6kzQLXoFScIGchzCQ?e=PYoyM6).
 
 
 <p align="center">
-<img src="./assets/P3p3-rqtplot.png" alt= “” width="550">
-</p>
-<p align="center">
 <img src="./assets/P3p3-rviz.png" alt= “” width="700">
 </p>
+<p align="center">
+<img src="./assets/P3p3-rqtplot.png" alt= “” width="550">
+</p>
+
 
 ## Descriptions about your implementation
 #### Trajectory generation
