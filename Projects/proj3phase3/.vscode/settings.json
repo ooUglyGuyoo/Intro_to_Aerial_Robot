@@ -1,0 +1,22 @@
+{
+    "files.associations": {
+        "*.m": "matlab",
+        "cmath": "cpp",
+        "complex": "cpp",
+        "ostream": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "initializer_list": "cpp",
+        "random": "cpp",
+        "core": "cpp",
+        "bitset": "cpp",
+        "valarray": "cpp",
+        "utility": "cpp",
+        "iostream": "cpp"
+    }
+}
